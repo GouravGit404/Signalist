@@ -31,5 +31,7 @@ export const connectToDatabase = async () => {
       console.error("Database connection failed:", err);
     throw err;
    }
-   console.log(`Connected to database ${process.env.NODE_ENV} ${MONGODB_URI}`);
+   console.log(`Connected to database ${process.env.NODE_ENV}   ${MONGODB_URI}`);
+
+   return cached.conn;
 }

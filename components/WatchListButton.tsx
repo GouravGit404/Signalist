@@ -1,16 +1,11 @@
+
+
 "use client";
 import React, { useMemo, useState } from "react";
-// Optional: Import Server Action here later
-//  import { toggleWatchlistStock } from "@/lib/actions/watchlist.actions";
 
-interface WatchlistButtonProps {
-  symbol: string;
-  company?: string;
-  isInWatchlist: boolean;
-  showTrashIcon?: boolean;
-  type?: "button" | "icon";
-  onWatchlistChange?: (symbol: string, isAdded: boolean) => void;
-}
+// Minimal WatchlistButton implementation to satisfy page requirements.
+// This component focuses on UI contract only. It toggles local state and
+// calls onWatchlistChange if provided. Styling hooks match globals.css.
 
 const WatchlistButton = ({
   symbol,
@@ -27,45 +22,35 @@ const WatchlistButton = ({
     return added ? "Remove from Watchlist" : "Add to Watchlist";
   }, [added, type]);
 
-  const handleClick = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent navigation if inside a Link
-
+  const handleClick = () => {
     const next = !added;
-    setAdded(next); // Optimistic UI update
-
-    // Call the parent function if provided
-    if (onWatchlistChange) {
-      onWatchlistChange(symbol, next);
-    }
-
-    // TODO: Later, you will add your Server Action here
-    // await toggleWatchlistStock(symbol, next);
+    setAdded(next);
+    onWatchlistChange?.(symbol, next);
   };
 
-  // 1. ICON VARIANT (The Star)
   if (type === "icon") {
     return (
       <button
-        type="button"
         title={
           added
             ? `Remove ${symbol} from watchlist`
             : `Add ${symbol} to watchlist`
         }
-        className={`p-2 rounded-full transition-all duration-200 ${
+        aria-label={
           added
-            ? "text-yellow-500 hover:bg-yellow-500/10"
-            : "text-gray-400 hover:text-yellow-500 hover:bg-gray-800"
-        }`}
+            ? `Remove ${symbol} from watchlist`
+            : `Add ${symbol} to watchlist`
+        }
+        className={`watchlist-icon-btn ${added ? "watchlist-icon-added" : ""}`}
         onClick={handleClick}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          fill={added ? "currentColor" : "none"}
-          stroke="currentColor"
+          fill={added ? "#FACC15" : "none"}
+          stroke="#FACC15"
           strokeWidth="1.5"
-          className="w-6 h-6"
+          className="watchlist-star"
         >
           <path
             strokeLinecap="round"
@@ -77,16 +62,10 @@ const WatchlistButton = ({
     );
   }
 
-  // 2. BUTTON VARIANT (The Big Button)
   return (
     <button
-      type="button"
+      className={`watchlist-btn ${added ? "watchlist-remove" : ""}`}
       onClick={handleClick}
-      className={`flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto ${
-        added
-          ? "bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20"
-          : "bg-yellow-500 text-gray-900 hover:bg-yellow-400"
-      }`}
     >
       {showTrashIcon && added ? (
         <svg
@@ -95,12 +74,12 @@ const WatchlistButton = ({
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-4 h-4 mr-2"
+          className="w-5 h-5 mr-2"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+            d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 4v6m4-6v6m4-6v6"
           />
         </svg>
       ) : null}

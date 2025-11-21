@@ -1,4 +1,5 @@
 "use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,16 +8,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import { useRouter } from "next/navigation";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import NavItems from "./NavItems";
+import NavItems from "@/components/NavItems";
 import { signOut } from "@/lib/actions/auth.actions";
 
-const UserDropdown = ({ user }: {user: User}) => {
+const UserDropdown = ({
+  user,
+  initialStocks,
+}: {
+  user: User;
+  initialStocks: StockWithWatchlistStatus[];
+}) => {
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -24,6 +29,10 @@ const UserDropdown = ({ user }: {user: User}) => {
     router.push("/sign-in");
   };
 
+  // FIX: We use (user as any) to bypass the TypeScript error
+  const userImage = (user as any).image
+    ? (user as any).image
+    : "https://github.com/shadcn.png";
 
   return (
     <DropdownMenu>
@@ -33,7 +42,7 @@ const UserDropdown = ({ user }: {user: User}) => {
           className="flex items-center gap-3 text-gray-4 hover:text-yellow-500"
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src={userImage} alt={user.name} />
             <AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">
               {user.name[0]}
             </AvatarFallback>
@@ -49,7 +58,7 @@ const UserDropdown = ({ user }: {user: User}) => {
         <DropdownMenuLabel>
           <div className="flex relative items-center gap-3 py-2">
             <Avatar className="h-10 w-10">
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src={userImage} alt={user.name} />
               <AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">
                 {user.name[0]}
               </AvatarFallback>
@@ -72,11 +81,10 @@ const UserDropdown = ({ user }: {user: User}) => {
         </DropdownMenuItem>
         <DropdownMenuSeparator className="hidden sm:block bg-gray-600" />
         <nav className="sm:hidden">
-           <NavItems/>
+          <NavItems initialStocks={initialStocks} />
         </nav>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
-
 export default UserDropdown;
